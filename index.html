@@ -45,7 +45,43 @@
         .foto-perfil { width: 200px; height: 200px; }
     }
 
+footer {
+    background: #fff;
+    padding: 40px 20px;
+    margin-top: 50px;
+    border-top: 5px solid var(--gold);
+    text-align: center;
+}
 
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.info-box {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    text-align: left;
+    min-width: 200px;
+}
+
+.info-item h4 {
+    color: var(--gold);
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.info-item p {
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
 
     </style>
 </head>
@@ -102,7 +138,32 @@
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
+    
+<footer>
+    <div class="footer-content">
+        <div class="logo">Ateliê da <span>Zê</span></div>
+        <p style="margin-top: 10px; font-size: 0.9rem;">Salgados artesanais feitos com amor e carinho.</p>
+        
+        <div class="info-box">
+            <div class="info-item">
+                <h4>📍 Onde Retirar</h4>
+                <p>Rua Exemplo, 123<br>Bairro - Cidade/UF</p>
+            </div>
+            
+            <div class="info-item">
+                <h4>⏰ Horários</h4>
+                <p>Terça a Sábado: 09h às 18h<br>Domingo: 08h às 12h</p>
+            </div>
+            
+            <div class="info-item">
+                <h4>💳 Pagamento</h4>
+                <p>Aceitamos Pix, Cartão de Crédito e Débito na retirada.</p>
+            </div>
+        </div>
+        
+        <p style="margin-top: 30px; font-size: 0.7rem; color: #888;">&copy; 2024 Ateliê da Zê - Todos os direitos reservados.</p>
+    </div>
+</footer>
 <script>
     // 1. SUAS CONFIGURAÇÕES (Já atualizadas!)
     const firebaseConfig = {
