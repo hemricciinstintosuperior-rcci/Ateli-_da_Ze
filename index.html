@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ateliê da Zenilda | Salgados Artesanais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #c59d5f; --dark: #2c2c2c; --bg: #f9f9f9; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg); color: var(--dark); }
+        
+        header { background: #fff; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; }
+        .logo span { color: var(--gold); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+
+        /* Card de Salgado */
+        .card { background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card-img { width: 100%; height: 200px; background: #ddd; object-fit: cover; }
+        .card-body { padding: 20px; }
+        
+        .tamanhos-seletor { margin: 15px 0; }
+        select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
+        
+        .price { font-size: 1.4rem; color: var(--gold); font-weight: 600; display: block; margin-bottom: 15px; }
+        
+        .btn-pedido { 
+            display: block; width: 100%; padding: 12px; background: var(--gold); color: #fff; 
+            text-align: center; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none;
+        }
+
+        .whatsapp-float { position: fixed; bottom: 20px; right: 20px; background: #25d366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+
+    .sobre-flex { display: flex; align-items: center; gap: 40px; background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .foto-perfil { width: 300px; height: 300px; border-radius: 50%; object-fit: cover; border: 5px solid var(--gold); }
+    .music-player { margin-top: 20px; padding: 15px; background: #f4f4f4; border-radius: 10px; }
+    .music-player span { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; }
+    
+    @media (max-width: 768px) {
+        .sobre-flex { flex-direction: column; text-align: center; }
+        .foto-perfil { width: 200px; height: 200px; }
+    }
+
+
+
+    </style>
+</head>
+<body>
+
+<section class="perfil-zenilda container">
+    <div class="sobre-flex">
+        <div class="foto-container">
+            <img src="foto-zenilda-especial.jpg" alt="Dona Zenilda" class="foto-perfil">
+        </div>
+        <div class="texto-perfil">
+            <h2>A Alma do Ateliê</h2>
+            <p>Conheça a dedicação e o carinho da Dona Zenilda em cada detalhe.</p>
+            
+            <div class="music-player">
+                <span>Ouça nossa trilha:</span>
+                <audio controls>
+                    <source src="sua-musica.mp3" type="audio/mpeg">
+                    Seu navegador não suporta o player de áudio.
+                </audio>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<header>
+    <div class="logo">Ateliê da <span>Zenilda</span></div>
+</header>
+
+<div class="container">
+    <div class="grid" id="grid-salgados">
+        </div>
+</div>
+
+<a href="#" class="whatsapp-float"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="35"></a>
+
+<script>
+    // 1. Dados dos Produtos (Aqui você gerencia tudo!)
+    const salgados = [
+        { id: 1, nome: "Coxinha de Frango", img: "coxinha.jpg", precos: { pequeno: "45,00", medio: "80,00", grande: "120,00" } },
+        { id: 2, nome: "Quibe Tradicional", img: "quibe.jpg", precos: { pequeno: "50,00", medio: "90,00", grande: "130,00" } },
+        { id: 3, nome: "Bolinho de Queijo", img: "queijo.jpg", precos: { pequeno: "45,00", medio: "85,00", grande: "125,00" } },
+        { id: 4, nome: "Risoles de Presunto/Queijo", img: "risoles.jpg", precos: { pequeno: "45,00", medio: "80,00", grande: "120,00" } },
+        // Espaços vazios para os próximos 5 que você pediu
+        { id: 5, nome: "Em breve...", img: "", precos: { pequeno: "00,00", medio: "00,00", grande: "00,00" } },
+    ];
+
+    const container = document.getElementById('grid-salgados');
+
+    function renderizar() {
+        salgados.forEach(s => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${s.img || 'https://via.placeholder.com/300x200'}" class="card-img">
+                <div class="card-body">
+                    <h3>${s.nome}</h3>
+                    <div class="tamanhos-seletor">
+                        <label>Escolha o tamanho:</label>
+                        <select onchange="atualizarPreco(this, ${s.id})">
+                            <option value="${s.precos.pequeno}">Pequeno (Cento)</option>
+                            <option value="${s.precos.medio}">Médio (Cento)</option>
+                            <option value="${s.precos.grande}">Grande (Unidade/Kg)</option>
+                        </select>
+                    </div>
+                    <span class="price" id="price-${s.id}">R$ ${s.precos.pequeno}</span>
+                    <button class="btn-pedido" onclick="finalizarPedido(${s.id})">Encomendar</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function atualizarPreco(select, id) {
+        document.getElementById(`price-${id}`).innerText = "R$ " + select.value;
+    }
+
+    async function finalizarPedido(id) {
+        const item = salgados.find(s => s.id === id);
+        const precoAtual = document.getElementById(`price-${id}`).innerText;
+        
+        // Aqui entra sua mágica do Firebase/Make
+        const dadosPedido = {
+            produto: item.nome,
+            valor: precoAtual,
+            data: new Date().toISOString()
+        };
+
+        console.log("Enviando para o Firebase...", dadosPedido);
+        
+        // Exemplo de chamada para seu Webhook do Make
+        // fetch('SEU_WEBHOOK_MAKE', { method: 'POST', body: JSON.stringify(dadosPedido) });
+
+        alert(`Pedido de ${item.nome} enviado! Dona Zenilda já vai receber o alerta.`);
+
+function salvarPedidoNoFirebase(pedido) {
+    firebase.database().ref('pedidos/').push({
+        cliente_id: "ID_UNICO",
+        itens: pedido,
+        status: "pendente",
+        data: Date.now()
+    });
+}
+        
+        // Redireciona para o WhatsApp
+        window.open(`https://wa.me/5511999999999?text=Olá! Quero encomendar ${item.nome} (${precoAtual})`);
+    }
+
+    renderizar();
+</script>
+</body>
+</html>
