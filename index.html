@@ -150,6 +150,20 @@ function salvarPedidoNoFirebase(pedido) {
         data: Date.now()
     });
 }
+
+function enviarPedido(salgado, preco) {
+    // Esse link é o que o Make te deu
+    fetch('https://hook.us2.make.com/1dv38303i6hd98vf4oodg1v1rqwr2ee5', {
+        method: 'POST',
+        body: JSON.stringify({
+            item: salgado,
+            valor: preco,
+            cliente: "Nome do Cliente"
+        })
+    });
+    alert("Pedido enviado para a Dona Zenilda!");
+}
+        
         
         // Redireciona para o WhatsApp
         window.open(`https://hemricciinstintosuperior-rcci.github.io/Ateli-_da_Ze/5511981861020?text=Olá! Quero encomendar ${item.nome} (${precoAtual})`);
