@@ -74,16 +74,35 @@
 
         // Função para liberar o áudio no navegador
 function iniciarAudio() {
-        // Isso "acorda" o áudio no celular
+        const btn = document.getElementById('btn-ativar');
+        
+        // 1. Feedback visual imediato
+        btn.innerText = "ATIVANDO...";
+        btn.style.backgroundColor = "#ffcc00"; 
+
+        // 2. Tenta "desbloquear" o canal de áudio do navegador
+        // Usamos um som de sistema ou o próprio alerta
         som.play().then(() => {
+            // Se chegou aqui, o áudio funcionou!
             som.pause();
             som.currentTime = 0;
-            btn.style.backgroundColor = "#25d366";
+            
+            btn.style.backgroundColor = "#25d366"; // Verde WhatsApp
             btn.innerText = "SISTEMA PRONTO!";
-            console.log("Áudio local desbloqueado com sucesso!");
+            btn.style.boxShadow = "0 0 20px #25d366";
+            
+            // Faz o botão sumir depois de 2 segundos para limpar a tela
+            setTimeout(() => {
+                btn.style.display = 'none';
+            }, 2000);
+
+            console.log("Áudio desbloqueado com sucesso.");
         }).catch(err => {
-            console.error("Erro ao carregar alerta.mp3:", err);
-            alert("Certifique-se de que o arquivo alerta.mp3 está na pasta do GitHub.");
+            // Se der erro (arquivo não achado ou bloqueio)
+            btn.innerText = "ERRO AO ATIVAR";
+            btn.style.backgroundColor = "#ff4444";
+            console.error("Erro no áudio:", err);
+            alert("Clique novamente. O navegador precisa do seu toque para liberar o som.");
         });
     }
 
