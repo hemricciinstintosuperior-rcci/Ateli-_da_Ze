@@ -157,30 +157,33 @@
         document.getElementById(`price-${id}`).innerText = "R$ " + select.value;
     }
 
-    async function processarPedido(id) {
+async function processarPedido(id) {
         const item = salgados.find(s => s.id === id);
         const precoAtual = document.getElementById(`price-${id}`).innerText;
         
         const dadosPedido = {
             produto: item.nome,
             valor: precoAtual,
+            tipo: "Retirada no Local", // Deixa registrado no Firebase
             data: new Date().toLocaleString('pt-BR')
         };
 
-        // SALVA NO FIREBASE (Para o seu app "gritar")
+        // SALVA NO FIREBASE
         database.ref('pedidos/').push(dadosPedido);
 
-        // ENVIA PARA O MAKE (Sua automação)
+        // ENVIA PARA O MAKE
         fetch('https://hook.us2.make.com/1dv38303i6hd98vf4oodg1v1rqwr2ee5', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dadosPedido)
         });
 
-        alert(`Pedido de ${item.nome} enviado! Dona Zenilda já vai receber o alerta.`);
+        // Alerta educativo para o cliente
+        alert(`Pedido de ${item.nome} enviado!\n\nLembre-se: Combinaremos o horário para você RETIRAR o pedido no nosso endereço.`);
         
-        // ABRE O WHATSAPP
-        window.open(`https://wa.me/5511981861020?text=Olá! Quero encomendar ${item.nome} (${precoAtual})`);
+        // ABRE O WHATSAPP com a informação de retirada
+        const mensagemWhats = `Olá! Quero encomendar ${item.nome} (${precoAtual}) para RETIRADA. Qual o prazo de entrega?`;
+        window.open(`https://wa.me/5511981861020?text=${encodeURIComponent(mensagemWhats)}`);
     }
 
     renderizar();
