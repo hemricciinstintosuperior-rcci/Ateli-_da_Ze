@@ -51,6 +51,8 @@
     <div id="lista-pedidos"></div>
 
     <audio id="somAlerta" preload="auto">
+    <source src="alerta.mp3" type="audio/mpeg">
+</audio>
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-hotel-reception-bell-ding-584.mp3" type="audio/mpeg">
     </audio>
 
@@ -71,13 +73,19 @@
         const btn = document.getElementById('btn-ativar');
 
         // Função para liberar o áudio no navegador
-        function iniciarAudio() {
-            som.play().then(() => {
-                som.pause();
-                som.currentTime = 0;
-                btn.style.display = 'none'; // Esconde o botão após ativar
-            });
-        }
+function iniciarAudio() {
+        // Isso "acorda" o áudio no celular
+        som.play().then(() => {
+            som.pause();
+            som.currentTime = 0;
+            btn.style.backgroundColor = "#25d366";
+            btn.innerText = "SISTEMA PRONTO!";
+            console.log("Áudio local desbloqueado com sucesso!");
+        }).catch(err => {
+            console.error("Erro ao carregar alerta.mp3:", err);
+            alert("Certifique-se de que o arquivo alerta.mp3 está na pasta do GitHub.");
+        });
+    }
 
 database.ref('pedidos').on('child_added', (snapshot) => {
             const pedido = snapshot.val();
