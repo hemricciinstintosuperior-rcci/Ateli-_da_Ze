@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Pedidos | Ateliê da Zê</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #1a1a1a; color: white; padding: 20px; text-align: center; }
+        h1 { color: #c59d5f; border-bottom: 2px solid #c59d5f; padding-bottom: 10px; }
+        
+        #btn-ativar { 
+            background: #c59d5f; border: none; color: white; padding: 15px 30px; 
+            border-radius: 50px; font-weight: bold; margin: 20px auto; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(197, 157, 95, 0.4);
+        }
+
+        .status-conexao { font-size: 0.8rem; margin-bottom: 20px; color: #00ff00; }
+        
+        #lista-pedidos { display: flex; flex-direction: column; gap: 15px; text-align: left; }
+        
+        .card-pedido { 
+            background: #2c2c2c; border-left: 8px solid #c59d5f; 
+            padding: 20px; border-radius: 10px; 
+            animation: bounceIn 0.5s ease;
+        }
+
+        .horario { font-size: 0.7rem; color: #aaa; }
+        .produto { font-size: 1.2rem; font-weight: bold; display: block; margin: 5px 0; }
+        .valor { color: #c59d5f; font-weight: bold; }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Ateliê da Zê | Cozinha</h1>
+    
+    <button id="btn-ativar" onclick="iniciarAudio()">Ativar Alerta Sonoro</button>
+    
+    <p class="status-conexao">● Sistema Pronto e Monitorando</p>
+
+    <div id="lista-pedidos"></div>
+
+    <audio id="somAlerta" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-hotel-reception-bell-ding-584.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyA88AxRNQI38H6uTMsNRYfonaHnaZGHbJU",
+          authDomain: "atelie-da-ze.firebaseapp.com",
+          databaseURL: "https://atelie-da-ze-default-rtdb.firebaseio.com",
+          projectId: "atelie-da-ze",
+          storageBucket: "atelie-da-ze.firebasestorage.app",
+          messagingSenderId: "727420842492",
+          appId: "1:727420842492:web:c82bb75717c42578270279"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const som = document.getElementById('somAlerta');
+        const btn = document.getElementById('btn-ativar');
+
+        // Função para liberar o áudio no navegador
+        function iniciarAudio() {
+            som.play().then(() => {
+                som.pause();
+                som.currentTime = 0;
+                btn.style.display = 'none'; // Esconde o botão após ativar
+            });
+        }
+
+        database.ref('pedidos').on('child_added', (snapshot) => {
+            const pedido = snapshot.val();
+            
+            // Tocar campainha
+            som.play().catch(e => console.log("Aguardando ativação do áudio..."));
+
+            const card = document.createElement('div');
+            card.className = 'card-pedido';
+            card.innerHTML = `
+                <span class="horario">${new Date(pedido.data || Date.now()).toLocaleTimeString()}</span>
+                <span class="produto">${pedido.produto}</span>
+                <span class="valor">${pedido.valor}</span>
+            `;
+            
+            document.getElementById('lista-pedidos').prepend(card);
+        });
+    </script>
+</body>
+</html>
