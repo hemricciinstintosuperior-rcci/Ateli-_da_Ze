@@ -83,15 +83,33 @@
 
 <a href="#" class="whatsapp-float"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="35"></a>
 
+
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
 <script>
-    // 1. Dados dos Produtos (Aqui você gerencia tudo!)
+    // 1. SUAS CONFIGURAÇÕES (Já atualizadas!)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA88AxRNQI38H6uTMsNRYfonaHnaZGHbJU",
+      authDomain: "atelie-da-ze.firebaseapp.com",
+      databaseURL: "https://atelie-da-ze-default-rtdb.firebaseio.com",
+      projectId: "atelie-da-ze",
+      storageBucket: "atelie-da-ze.firebasestorage.app",
+      messagingSenderId: "727420842492",
+      appId: "1:727420842492:web:c82bb75717c42578270279"
+    };
+
+    // Inicializa o Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // 2. Dados dos Produtos
     const salgados = [
         { id: 1, nome: "Coxinha de Frango", img: "coxinha.jpg", precos: { pequeno: "45,00", medio: "80,00", grande: "120,00" } },
         { id: 2, nome: "Quibe Tradicional", img: "quibe.jpg", precos: { pequeno: "50,00", medio: "90,00", grande: "130,00" } },
         { id: 3, nome: "Bolinho de Queijo", img: "queijo.jpg", precos: { pequeno: "45,00", medio: "85,00", grande: "125,00" } },
-        { id: 4, nome: "Risoles de Presunto/Queijo", img: "risoles.jpg", precos: { pequeno: "45,00", medio: "80,00", grande: "120,00" } },
-        // Espaços vazios para os próximos 5 que você pediu
-        { id: 5, nome: "Em breve...", img: "", precos: { pequeno: "00,00", medio: "00,00", grande: "00,00" } },
+        { id: 4, nome: "Risoles de Presunto/Queijo", img: "risoles.jpg", precos: { pequeno: "45,00", medio: "80,00", grande: "120,00" } }
     ];
 
     const container = document.getElementById('grid-salgados');
@@ -113,7 +131,7 @@
                         </select>
                     </div>
                     <span class="price" id="price-${s.id}">R$ ${s.precos.pequeno}</span>
-                    <button class="btn-pedido" onclick="finalizarPedido(${s.id})">Encomendar</button>
+                    <button class="btn-pedido" onclick="processarPedido(${s.id})">Encomendar</button>
                 </div>
             `;
             container.appendChild(card);
@@ -124,49 +142,30 @@
         document.getElementById(`price-${id}`).innerText = "R$ " + select.value;
     }
 
-    async function finalizarPedido(id) {
+    async function processarPedido(id) {
         const item = salgados.find(s => s.id === id);
         const precoAtual = document.getElementById(`price-${id}`).innerText;
         
-        // Aqui entra sua mágica do Firebase/Make
         const dadosPedido = {
             produto: item.nome,
             valor: precoAtual,
-            data: new Date().toISOString()
+            data: new Date().toLocaleString('pt-BR')
         };
 
-        console.log("Enviando para o Firebase...", dadosPedido);
-        
-        // Exemplo de chamada para seu Webhook do Make
-        // fetch('SEU_WEBHOOK_MAKE', { method: 'POST', body: JSON.stringify(dadosPedido) });
+        // SALVA NO FIREBASE (Para o seu app "gritar")
+        database.ref('pedidos/').push(dadosPedido);
+
+        // ENVIA PARA O MAKE (Sua automação)
+        fetch('https://hook.us2.make.com/1dv38303i6hd98vf4oodg1v1rqwr2ee5', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosPedido)
+        });
 
         alert(`Pedido de ${item.nome} enviado! Dona Zenilda já vai receber o alerta.`);
-
-function salvarPedidoNoFirebase(pedido) {
-    firebase.database().ref('pedidos/').push({
-        cliente_id: "ID_UNICO",
-        itens: pedido,
-        status: "pendente",
-        data: Date.now()
-    });
-}
-
-function enviarPedido(salgado, preco) {
-    // Esse link é o que o Make te deu
-    fetch('https://hook.us2.make.com/1dv38303i6hd98vf4oodg1v1rqwr2ee5', {
-        method: 'POST',
-        body: JSON.stringify({
-            item: salgado,
-            valor: preco,
-            cliente: "Nome do Cliente"
-        })
-    });
-    alert("Pedido enviado para a Dona Zenilda!");
-}
         
-        
-        // Redireciona para o WhatsApp
-        window.open(`https://hemricciinstintosuperior-rcci.github.io/Ateli-_da_Ze/5511981861020?text=Olá! Quero encomendar ${item.nome} (${precoAtual})`);
+        // ABRE O WHATSAPP
+        window.open(`https://wa.me/5511981861020?text=Olá! Quero encomendar ${item.nome} (${precoAtual})`);
     }
 
     renderizar();
