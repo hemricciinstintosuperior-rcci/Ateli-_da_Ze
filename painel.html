@@ -79,16 +79,31 @@
             });
         }
 
-        database.ref('pedidos').on('child_added', (snapshot) => {
+database.ref('pedidos').on('child_added', (snapshot) => {
             const pedido = snapshot.val();
             
             // Tocar campainha
             som.play().catch(e => console.log("Aguardando ativação do áudio..."));
 
+            // Lógica para corrigir a data:
+            // Se a data do pedido for inválida, usamos a hora atual
+            let dataFormatada;
+            try {
+                const dataPedido = new Date(pedido.data);
+                if (isNaN(dataPedido.getTime())) {
+                    // Se der erro, mostra a hora de agora
+                    dataFormatada = new Date().toLocaleTimeString('pt-BR');
+                } else {
+                    dataFormatada = dataPedido.toLocaleTimeString('pt-BR');
+                }
+            } catch (e) {
+                dataFormatada = new Date().toLocaleTimeString('pt-BR');
+            }
+
             const card = document.createElement('div');
             card.className = 'card-pedido';
             card.innerHTML = `
-                <span class="horario">${new Date(pedido.data || Date.now()).toLocaleTimeString()}</span>
+                <span class="horario">${dataFormatada}</span>
                 <span class="produto">${pedido.produto}</span>
                 <span class="valor">${pedido.valor}</span>
             `;
