@@ -90,24 +90,33 @@ function iniciarAudio() {
 database.ref('pedidos').on('child_added', (snapshot) => {
             const pedido = snapshot.val();
             
-            // Tocar campainha
-            som.play().catch(e => console.log("Aguardando ativação do áudio..."));
+            // 1. Lógica do Áudio Individual
+            const nomeSalgado = pedido.produto.toLowerCase(); // Transforma em minúsculo para facilitar
+            let audioParaTocar = 'alerta_geral.mp3'; // Som padrão caso não ache o nome
 
-            // Lógica para corrigir a data:
-            // Se a data do pedido for inválida, usamos a hora atual
-            let dataFormatada;
-            try {
-                const dataPedido = new Date(pedido.data);
-                if (isNaN(dataPedido.getTime())) {
-                    // Se der erro, mostra a hora de agora
-                    dataFormatada = new Date().toLocaleTimeString('pt-BR');
-                } else {
-                    dataFormatada = dataPedido.toLocaleTimeString('pt-BR');
-                }
-            } catch (e) {
-                dataFormatada = new Date().toLocaleTimeString('pt-BR');
+            // Verifica qual áudio tocar baseado no nome que veio do banco
+            if (nomeSalgado.includes('coxinha')) {
+                audioParaTocar = 'coxinha.mp3';
+            } else if (nomeSalgado.includes('quibe')) {
+                audioParaTocar = 'quibe.mp3';
+            } else if (nomeSalgado.includes('queijo')) {
+                audioParaTocar = 'queijo.mp3';
+            } else if (nomeSalgado.includes('risoles')) {
+                audioParaTocar = 'risoles.mp3';
             }
 
+            // 2. Toca o áudio específico
+            const somDinamico = new Audio(audioParaTocar);
+            somDinamico.play().catch(e => console.log("Áudio bloqueado! Clique em Ativar Alerta."));
+
+            // 3. Lógica da Data (Corrigida para evitar o Invalid Date)
+            let dataFormatada = new Date().toLocaleTimeString('pt-BR');
+            if (pedido.data) {
+                const d = new Date(pedido.data);
+                if (!isNaN(d.getTime())) dataFormatada = d.toLocaleTimeString('pt-BR');
+            }
+
+            // 4. Cria o card na tela
             const card = document.createElement('div');
             card.className = 'card-pedido';
             card.innerHTML = `
