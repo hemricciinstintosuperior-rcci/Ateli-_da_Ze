@@ -83,6 +83,41 @@ footer {
     line-height: 1.6;
 }
 
+/* Estilo do menu clicável de Ingredientes */
+.ingredientes-container {
+    margin: 12px 0;
+    border-radius: 8px;
+    background-color: #fafafa;
+    border: 1px solid #eee;
+    overflow: hidden;
+}
+
+.ingredientes-container details {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.ingredientes-container summary {
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--dark);
+    outline: none;
+    user-select: none;
+    padding: 4px 0;
+}
+
+.ingredientes-container summary:hover {
+    color: var(--gold);
+}
+
+.ingredientes-container p {
+    margin-top: 6px;
+    line-height: 1.4;
+    color: #666;
+}
+        
+
     </style>
 </head>
 <body>
@@ -180,40 +215,85 @@ footer {
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // 2. Dados dos Produtos
-    const salgados = [
-        { id: 1, nome: "Coxinha de Frango", img: "coxinha.jpeg", precos: { pequeno: "45,00", medio: "80,00", grande: "120,00" } },
-        { id: 2, nome: "Quibe Tradicional", img: "kibe.jpeg", precos: { pequeno: "50,00", medio: "90,00", grande: "130,00" } },
-        { id: 3, nome: "Bolinho de Queijo", img: "bolinhoqueijo.jpeg", precos: { pequeno: "45,00", medio: "85,00", grande: "125,00" } },
-        { id: 3, nome: "Bolo de Pote", img: "bolopote.jpeg", precos: { pequeno: "45,00", medio: "85,00", grande: "125,00" } },
-        { id: 4, nome: "Risoles de Presunto/Queijo", img: "risoles.jpeg", precos: { pequeno: "45,00", medio: "80,00", grande: "120,00" } }
-    ];
-
-    const container = document.getElementById('grid-salgados');
-
-    function renderizar() {
-        salgados.forEach(s => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <img src="${s.img || 'https://via.placeholder.com/300x200'}" class="card-img">
-                <div class="card-body">
-                    <h3>${s.nome}</h3>
-                    <div class="tamanhos-seletor">
-                        <label>Escolha o tamanho:</label>
-                        <select onchange="atualizarPreco(this, ${s.id})">
-                            <option value="${s.precos.pequeno}">Pequeno (Cento)</option>
-                            <option value="${s.precos.medio}">Médio (Cento)</option>
-                            <option value="${s.precos.grande}">Grande (Unidade/Kg)</option>
-                        </select>
-                    </div>
-                    <span class="price" id="price-${s.id}">R$ ${s.precos.pequeno}</span>
-                    <button class="btn-pedido" onclick="processarPedido(${s.id})">Encomendar</button>
-                </div>
-            `;
-            container.appendChild(card);
-        });
+// 2. Dados dos Produtos com os Ingredientes e IDs corrigidos
+const salgados = [
+    { 
+        id: 1, 
+        nome: "Coxinha de Frango", 
+        img: "coxinha.jpeg", 
+        ingredientes: "Massa leve de batata, recheio de frango desfiado temperado com ervas finas e requeijão cremoso.",
+        precos: { pequeno: "45,00", medio: "80,00", grande: "120,00" } 
+    },
+    { 
+        id: 2, 
+        nome: "Quibe Tradicional", 
+        img: "kibe.jpeg", 
+        ingredientes: "Trigo para quibe, carne moída de primeira, hortelã fresca, cebola e tempero sírio.",
+        precos: { pequeno: "50,00", medio: "90,00", grande: "130,00" } 
+    },
+    { 
+        id: 3, 
+        nome: "Bolinho de Queijo", 
+        img: "bolinhoqueijo.jpeg", 
+        ingredientes: "Massa de mandioca/batata empanada crocante, recheada com mussarela derretida e orégano.",
+        precos: { pequeno: "45,00", medio: "85,00", grande: "125,00" } 
+    },
+    { 
+        id: 4, 
+        nome: "Bolo de Pote", 
+        img: "bolopote.jpeg", 
+        ingredientes: "Camadas fofinhas de pão de ló, recheio cremoso de brigadeiro gourmet e cobertura artesanal.",
+        precos: { pequeno: "45,00", medio: "85,00", grande: "125,00" } 
+    },
+    { 
+        id: 5, 
+        nome: "Risoles de Presunto/Queijo", 
+        img: "risoles.jpeg", 
+        ingredientes: "Massa cozida empanada com recheio cremoso de presunto magro e queijo mussarela.",
+        precos: { pequeno: "45,00", medio: "80,00", grande: "120,00" } 
+    },
+    { 
+        id: 6, 
+        nome: "Baguete de Calabresa", 
+        img: "calabresatomategrande.jpeg", 
+        ingredientes: "Massa assada macia, recheio generoso de calabresa moída, queijo mussarela, Quento e vinagrete.",
+        precos: { pequeno: "15,00", medio: "25,00", grande: "50,00" } 
     }
+];
+
+const container = document.getElementById('grid-salgados');
+
+function renderizar() {
+    salgados.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <img src="${s.img || 'https://via.placeholder.com/300x200'}" class="card-img">
+            <div class="card-body">
+                <h3>${s.nome}</h3>
+                
+                <div class="ingredientes-container">
+                    <details>
+                        <summary>Ver ingredientes 🔍</summary>
+                        <p>${s.ingredientes}</p>
+                    </details>
+                </div>
+
+                <div class="tamanhos-seletor">
+                    <label>Escolha o tamanho:</label>
+                    <select onchange="atualizarPreco(this, ${s.id})">
+                        <option value="${s.precos.pequeno}">Pequeno (Cento)</option>
+                        <option value="${s.precos.medio}">Médio (Cento)</option>
+                        <option value="${s.precos.grande}">Grande (Unidade/Kg)</option>
+                    </select>
+                </div>
+                <span class="price" id="price-${s.id}">R$ ${s.precos.pequeno}</span>
+                <button class="btn-pedido" onclick="processarPedido(${s.id})">Encomendar</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
 
     function atualizarPreco(select, id) {
         document.getElementById(`price-${id}`).innerText = "R$ " + select.value;
